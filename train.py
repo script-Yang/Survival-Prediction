@@ -1,3 +1,25 @@
+"""
+===========================================
+Survival Prediction Training Script on TCGA Dataset
+===========================================
+
+This script provides a command-line interface to train survival prediction models 
+on TCGA histopathology and multi-omics data. The training supports various model 
+types such as CLAM-SB, CLAM-MB, and simple neural networks, and enables modality 
+selection (pathology, omics, or co-attention fusion). Supports k-fold cross-validation 
+and optional early stopping.
+
+Main functionalities:
+- Load and preprocess WSI and omics data
+- Train survival models using MIL-based frameworks
+- Evaluate using c-index and report fold-level results
+- Modular configuration via argparse
+
+Author: Sicheng Yang  
+Institution: School of Computer Science and Technology, Xi'an Jiaotong University  
+Date: June 26, 2025  
+"""
+
 import argparse
 from utils.my_utils import seed_torch
 from utils.my_core import train_model
