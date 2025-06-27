@@ -18,10 +18,30 @@ def train_model(datasets: tuple, cur: int, args: Namespace):
         from models.model_snn import SNN
         model_dict = {'omic_input_dim': args.omic_input_dim, 'model_size_omic': "small", 'n_classes': args.n_classes}
         model = SNN(**model_dict)
-    if args.model_type == "clam_sb":
+    elif args.model_type == "clam_sb":
         from models.model_clam import CLAM_SB
         model_dict = {}
         model = CLAM_SB(**model_dict)
+    elif args.model_type == 'clam_mb':
+        from models.model_clam import CLAM_MB
+        model_dict = {}
+        model = CLAM_MB(**model_dict)
+    elif args.model_type == 'deepset':
+        from models.model_deepset import MIL_Sum_FC_surv as deepset
+        model_dict = {}
+        model = deepset(**model_dict)
+    elif args.model_type == 'attmil':
+        from models.model_attmil import MIL_Attention_FC_surv as attmil
+        model_dict = {}
+        model = attmil(**model_dict)
+    elif args.model_type == 'porpoise':
+        from models.model_porpoise import PorpoiseAMIL as porpoise
+        model_dict = {}
+        model = porpoise(**model_dict)
+    elif args.model_type == 'transmil':
+        from models.model_transmil import TransMIL
+        model_dict = {}
+        model = TransMIL(**model_dict)
 
     model = model.to(device)
     optimizer = get_optim(model, args)
@@ -61,16 +81,16 @@ def train_model(datasets: tuple, cur: int, args: Namespace):
             epoch_max_c_index = epoch
             save_name = 's_{}_checkpoint'.format(cur)
             if args.load_model and os.path.isfile(os.path.join(
-                args.results_dir, save_name+".pt".format(cur))):
+                args.results_dir, args.model_type, save_name+".pt".format(cur))):
                 save_name+='_load'
 
             torch.save(model.state_dict(), os.path.join(
-                args.results_dir, save_name+".pt".format(cur)))
+                args.results_dir, args.model_type, save_name+".pt".format(cur)))
             best_val_dict = val_latest
 
     print_results = {'result': (max_c_index, epoch_max_c_index)}
     print("================= summary of fold {} ====================".format(cur))
     print("result: {:.4f}".format(max_c_index))
-    with open(os.path.join(args.results_dir, 'log.txt'), 'a') as f:
+    with open(os.path.join(args.results_dir, args.model_type, 'log.txt'), 'a') as f:
         f.write('result: {:.4f}, epoch: {}\n'.format(max_c_index, epoch_max_c_index))
     return best_val_dict, print_results

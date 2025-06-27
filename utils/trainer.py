@@ -87,7 +87,8 @@ def validate_survival(cur, epoch, model, loader, n_classes, early_stopping=None,
     val_loss_surv /= len(loader)
     val_loss /= len(loader)
     c_index = concordance_index_censored((1-all_censorships).astype(bool), all_event_times, all_risk_scores, tied_tol=1e-08)[0]
-    print("val c-index: {:.4f}".format(c_index))
+    # print("val c-index: {:.4f}".format(c_index))
+    print(f"epoch: {epoch}","val c-index: {:.4f}".format(c_index))
     if writer:
         writer.add_scalar('val/loss_surv', val_loss_surv, epoch)
         writer.add_scalar('val/loss', val_loss, epoch)

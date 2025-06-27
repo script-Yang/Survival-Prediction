@@ -35,12 +35,13 @@ from dataset.dataset_survival import Generic_MIL_Survival_Dataset
 dataset_name = 'CESC'
 
 
-parser.add_argument('--model_type', type=str, default='clam_sb', choices=['snn', 'clam_sb', 'clam_mb']
+parser.add_argument('--model_type', type=str, default='clam_sb', 
+choices=['snn', 'clam_sb', 'clam_mb','deepset','attmil','porpoise',
+'transmil']
 ,help='Type of model (Default: motcat)')
 
 parser.add_argument('--results_dir',     type=str, default=f'./results/{dataset_name}',
                     help='Results directory (Default: ./results)')
-
 
 parser.add_argument('--mode', default='path', type=str, choices=['omic', 'path', 'coattn'],
                     help='Specifies which modalities to use / collate function in dataloader.')
@@ -60,7 +61,6 @@ parser.add_argument('--batch_size',      type=int, default=1,
                     help='Batch Size (Default: 1, due to varying bag sizes)')
 parser.add_argument('--weighted_sample', action='store_true',
                     default=True, help='Enable weighted sampling')
-
 
 parser.add_argument('--opt', type=str, choices=['adam', 'sgd'], default='adam')
 parser.add_argument('--lr',type=float, default=2e-4, help='Learning rate (default: 0.0002)')
@@ -96,6 +96,7 @@ dataset = Generic_MIL_Survival_Dataset(csv_path=f"/vip_media/sicheng/DataShare/t
 omic_size = 10110
 def main(args):
     os.makedirs(args.results_dir,exist_ok=True)
+    os.makedirs(os.path.join(args.results_dir,args.model_type),exist_ok=True)
     start = 0
     end = args.k
     folds = np.arange(start, end)
