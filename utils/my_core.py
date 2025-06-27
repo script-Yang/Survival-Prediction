@@ -51,6 +51,8 @@ def train_model(datasets: tuple, cur: int, args: Namespace):
         if args.mode == 'coattn':
             print('ok_coattn')
         else:
+            # c_index_val = 1.0
+            # val_latest = {}
             train_loop_survival(epoch, model, train_loader, optimizer, args.n_classes, writer, loss_fn, reg_fn, args.lambda_reg, args.gc, args)
             val_latest, c_index_val, stop = validate_survival(cur, epoch, model, val_loader, args.n_classes, early_stopping, monitor_cindex, writer, loss_fn, reg_fn, args.lambda_reg, args.results_dir, args)
         
@@ -65,3 +67,10 @@ def train_model(datasets: tuple, cur: int, args: Namespace):
             torch.save(model.state_dict(), os.path.join(
                 args.results_dir, save_name+".pt".format(cur)))
             best_val_dict = val_latest
+
+    print_results = {'result': (max_c_index, epoch_max_c_index)}
+    print("================= summary of fold {} ====================".format(cur))
+    print("result: {:.4f}".format(max_c_index))
+    with open(os.path.join(args.results_dir, 'log.txt'), 'a') as f:
+        f.write('result: {:.4f}, epoch: {}\n'.format(max_c_index, epoch_max_c_index))
+    return best_val_dict, print_results

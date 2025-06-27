@@ -38,7 +38,7 @@ dataset_name = 'CESC'
 parser.add_argument('--model_type', type=str, default='clam_sb', choices=['snn', 'clam_sb', 'clam_mb']
 ,help='Type of model (Default: motcat)')
 
-parser.add_argument('--results_dir',     type=str, default='/vip_media/sicheng/DataShare/tmi_re/ours/results',
+parser.add_argument('--results_dir',     type=str, default=f'./results/{dataset_name}',
                     help='Results directory (Default: ./results)')
 
 
@@ -95,12 +95,15 @@ dataset = Generic_MIL_Survival_Dataset(csv_path=f"/vip_media/sicheng/DataShare/t
 
 omic_size = 10110
 def main(args):
+    os.makedirs(args.results_dir,exist_ok=True)
     start = 0
     end = args.k
     folds = np.arange(start, end)
     for i in folds:
         start_t = timer()
         seed_torch(args.seed)
+        split_path = '{}/{}/splits_{}.csv'.format(args.split_dir, dataset_name, i)
+        print(f"Using split path: {split_path}")
         train_dataset, val_dataset = dataset.return_splits(from_id=False,
         csv_path='{}/{}/splits_{}.csv'.format(args.split_dir, dataset_name, i))
         print('training: {}, validation: {}'.format(len(train_dataset), len(val_dataset)))
@@ -111,6 +114,7 @@ def main(args):
             args.omic_sizes = [omic_size,omic_size,omic_size,omic_size,omic_size]
 
         summary_results, print_results = train_model(datasets, i, args) 
+        
         end_t = timer()
         print('Fold %d Time: %f seconds' % (i, end_t - start_t))
         print('ok')
